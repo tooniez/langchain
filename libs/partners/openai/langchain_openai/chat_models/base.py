@@ -251,8 +251,6 @@ def _convert_message_to_dict(message: BaseMessage) -> dict:
         message_dict["role"] = "user"
     elif isinstance(message, AIMessage):
         message_dict["role"] = "assistant"
-        if "function_call" in message.additional_kwargs:
-            message_dict["function_call"] = message.additional_kwargs["function_call"]
         if message.tool_calls or message.invalid_tool_calls:
             message_dict["tool_calls"] = [
                 _lc_tool_call_to_openai_tool_call(tc) for tc in message.tool_calls
@@ -267,6 +265,10 @@ def _convert_message_to_dict(message: BaseMessage) -> dict:
                 {k: v for k, v in tool_call.items() if k in tool_call_supported_props}
                 for tool_call in message_dict["tool_calls"]
             ]
+        elif "function_call" in message.additional_kwargs:
+            # OpenAI raises 400 if both function_call and tool_calls are present in the
+            # same message.
+            message_dict["function_call"] = message.additional_kwargs["function_call"]
         else:
             pass
         # If tool calls present, content null value should be None not empty string.
@@ -2924,9 +2926,9 @@ class OpenAIRefusalError(Exception):
 
 
 def _create_usage_metadata(oai_token_usage: dict) -> UsageMetadata:
-    input_tokens = oai_token_usage.get("prompt_tokens", 0)
-    output_tokens = oai_token_usage.get("completion_tokens", 0)
-    total_tokens = oai_token_usage.get("total_tokens", input_tokens + output_tokens)
+    input_tokens = oai_token_usage.get("prompt_tokens") or 0
+    output_tokens = oai_token_usage.get("completion_tokens") or 0
+    total_tokens = oai_token_usage.get("total_tokens") or input_tokens + output_tokens
     input_token_details: dict = {
         "audio": (oai_token_usage.get("prompt_tokens_details") or {}).get(
             "audio_tokens"
