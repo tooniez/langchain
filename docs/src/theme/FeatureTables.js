@@ -462,14 +462,6 @@ const FEATURE_TABLES = {
                 package: "langchain_elasticsearch"
             },
             {
-                name: "MilvusCollectionHybridSearchRetriever",
-                link: "milvus_hybrid_search",
-                selfHost: true,
-                cloudOffering: false,
-                apiLink: "https://python.langchain.com/api_reference/milvus/retrievers/langchain_milvus.retrievers.milvus_hybrid_search.MilvusCollectionHybridSearchRetriever.html",
-                package: "langchain_milvus"
-            },
-            {
                 name: "VertexAISearchRetriever",
                 link: "google_vertex_ai_search",
                 selfHost: false,
@@ -1115,13 +1107,13 @@ const FEATURE_TABLES = {
                 link: "milvus",
                 deleteById: true,
                 filtering: true,
-                searchByVector: false,
+                searchByVector: true,
                 searchWithScore: true,
                 async: true,
-                passesStandardTests: false,
-                multiTenancy: false,
+                passesStandardTests: true,
+                multiTenancy: true,
                 local: true,
-                idsInAddDocuments: false,
+                idsInAddDocuments: true,
             },
             {
                 name: "MongoDBAtlasVectorSearch",
